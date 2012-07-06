@@ -1,0 +1,23 @@
+
+Items are roughly in order of interest. Help or patches implementing any of
+these would be very much appreciated!
+
+
+* tests
+
+
+* backups (filebuckets or extension, just as in file type)
+
+
+* mode and ownership settings?
+  Is this possible without resorting to excessive providers: ini-windows,
+  ini-posix, ...?
+
+
+* Multi-line inserts?
+  For monkey-patching system scripts, etc
+
+
+* Control placement of new lines?
+
+  add => [ before, 'mousewheel\.withcontrolkey\.action' ],

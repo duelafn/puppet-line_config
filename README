@@ -1,0 +1,82 @@
+
+Puppet file_line Module
+=======================
+
+BETA QUALITY SOFTWARE - not recommended for production use
+
+
+Manipulate individual lines of a file
+
+This module came about when I realized that augeas lenses are tied to
+specific config files, hence I could not use it to edit arbitrary ini files
+on my system (without creating a custom lens for each one).
+
+This module is trying to be appropriate for line-based config files.
+Currently it should be able to handle line-by-line configs, KEY=VALUE, and
+INI-style config files. It does not yet support puppet filebuckets or line
+ordering (See the TODO file).
+
+
+Examples:
+
+# sets general.smoothScroll to false.
+# ignores all comment lines
+# will replace any existing general.smoothScroll setting
+file_line { "/home/duelafn/etc/mozilla/user.js:general.smoothScroll":
+    provider => "basic",
+    path     => "/home/duelafn/etc/mozilla/user.js",
+    content  => 'user_pref("general.smoothScroll", false);',
+    ignore   => "^\\s*//",
+    replace  => "[\"']general\.smoothScroll[\"']",
+}
+
+# default provider replaces /^\s*KEY\s*=/ with "KEY=VALUE"
+# default provider ignores lines matching /^\s*#/
+file_line { "/etc/adduser.conf:DHOME":
+    path     => "/etc/adduser.conf",
+    key      => "DHOME",
+    value    => "/nfs/home",
+}
+
+# Set a default value only if missing
+file_line { "/etc/abcde.conf:OUTPUTTYPE":
+    path     => "/etc/abcde.conf",
+    ensure   => "set",
+    key      => "OUTPUTTYPE",
+    value    => "ogg",
+}
+
+# Sets "DefaultUser=guest" in corresponding section
+file_line { "kdmrc: DefaultUser":
+    provider => "ini",
+    path     => "/etc/kde4/kdm/kdmrc",
+    section  => "X-:0-Greeter",
+    key      => "DefaultUser",
+    value    => "guest",
+}
+
+# Ensure AutoLoginUser is missing from all sections
+file_line { "kdmrc: Auto-login":
+    provider => "ini",
+    ensure   => "unset",
+    path     => "/etc/kde4/kdm/kdmrc",
+    key      => "NoPassUsers",
+}
+
+
+# Using a define to make config settings quite sane:
+define kdmrc($section=undef, $key=$name, $value=undef, $ensure=present) {
+    file_line { "kdmrc: [$section] $key":
+        provider => "ini",
+        path     => "/etc/kde4/kdm/kdmrc",
+        ensure   => $ensure,
+        key      => $key,
+        value    => $value,
+    }
+}
+
+kdmrc { "NoPassUsers": ensure => "unset" }
+kdmrc { "DefaultUser":
+    value => "guest",
+    section => "X-:0-Greeter"
+}
