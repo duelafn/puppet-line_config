@@ -9,6 +9,10 @@ Puppet::Type.newtype(:file_line) do
 
     @doc = %q!Manipulate individual lines of a file
 
+Autorequires: File resource with same path as this resource. Currently,
+this is the only way to control ownership and permissions of the config
+file.
+
 Examples:
 
 # sets general.smoothScroll to false.
@@ -19,7 +23,14 @@ file_line { "/home/duelafn/etc/mozilla/user.js:general.smoothScroll":
     path     => "/home/duelafn/etc/mozilla/user.js",
     content  => 'user_pref("general.smoothScroll", false);',
     ignore   => "^\\s*#",
-    replace  => "[\"']general\.smoothScroll[\"']",
+    replace  => "[\\"']general\\.smoothScroll[\\"']",
+}
+
+# manage individual fstab entries
+file_line { "/etc/fstab: Student share":
+    path     => "/etc/fstab",
+    content  => "//192.168.100.10/shared    /SHARE    smbfs    username=guest,password=,uid=guest    0    0",
+    replace  => "\\s/SHARE\\s",
 }
 
 # base assumption is replace /^KEY=/ with "KEY=VALUE"
@@ -57,6 +68,7 @@ file_line { "kdmrc: Auto-login":
 
 
 # Use a define to make config settings quite nice:
+# Use a custom replace to replace both commented and uncommented instances
 define kdmrc($section=undef, $key=$name, $value=undef, $ensure=present) {
     file_line { "kdmrc: [$section] $key":
         provider => "ini",
@@ -64,6 +76,10 @@ define kdmrc($section=undef, $key=$name, $value=undef, $ensure=present) {
         ensure   => $ensure,
         key      => $key,
         value    => $value,
+        section  => $section,
+        ignore   => [],
+        replace  => [ "^\\s*$key\\s*=", "^\\s*#\\s*$key\\s*=" ],
+        require  => Package["kdm"],
     }
 }
 
