@@ -224,7 +224,7 @@ unset   - (requires "keyval" feature) the key is not set. value parameter is not
         self[:provider] ||= "default"
 
         if self[:content]
-            content_re = Regexp.new(Regexp.escape(self[:content]))
+            content_re = Regexp.new("^#{Regexp.escape(self[:content])}$")
             self[:accept].push(content_re)
             @target_value_s = self[:content]
         end
@@ -247,7 +247,7 @@ unset   - (requires "keyval" feature) the key is not set. value parameter is not
     def default_content(value)
         unless self[:content]
             self[:content] = value
-            append_accepts(Regexp.escape(value))
+            append_accepts("^#{Regexp.escape(value)}$")
             @target_value_s = self[:content]
         end
     end

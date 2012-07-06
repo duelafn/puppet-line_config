@@ -1,5 +1,6 @@
+require File.join(File.dirname(__FILE__), '..', 'file_line')
 
-Puppet::Type.type(:file_line).provide(:default, :parent => :basic) do
+Puppet::Type.type(:file_line).provide(:default, :parent => Puppet::Provider::FileLine) do
     has_feature :keyval
     desc ""
 
@@ -12,20 +13,6 @@ Puppet::Type.type(:file_line).provide(:default, :parent => :basic) do
 
         if @resource[:key] and @resource[:value]
             @resource.default_content "#{@resource[:key]}=#{@resource[:value]}"
-        end
-    end
-
-    def set
-        insert
-    end
-
-    def unset
-        munge_lines do |line|
-            if accepts?(line) or replaces?(line)
-                nil
-            else
-                line
-            end
         end
     end
 
