@@ -18,6 +18,10 @@ these would be very much appreciated!
   For monkey-patching system scripts, etc
 
 
+* ensure => "comment"
+  takes whatever was found and comments it
+
+
 * Control placement of new lines?
 
   add => [ before, 'mousewheel\.withcontrolkey\.action' ],

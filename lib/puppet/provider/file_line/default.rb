@@ -4,6 +4,8 @@ Puppet::Type.type(:file_line).provide(:default, :parent => Puppet::Provider::Fil
     has_feature :keyval
     desc ""
 
+    defaultfor :feature => :posix
+
     def setup
         @resource.default_ignore "^\\s*#"
 

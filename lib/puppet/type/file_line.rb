@@ -9,6 +9,18 @@ Puppet::Type.newtype(:file_line) do
 
     @doc = %q!Manipulate individual lines of a file
 
+BEWARE: This sort of manipulation can greatly increase the chance of
+unintentional conflict where two different parts of your puppet config try
+to set conflicting data. For instance, one part of your config sets a
+variable to one value and another part sets it to something else. If you do
+this, the result is undefined since, under most circumstances, the
+execution order of puppet is undefined.
+
+One way to combat this is to standardize your naming by CONSTANT VIGILANCE
+(I recommend "filename: keyname") or by using "define" to create a custom
+subtype.
+
+
 Autorequires: File resource with same path as this resource. Currently,
 this is the only way to control ownership and permissions of the config
 file.
@@ -18,31 +30,31 @@ Examples:
 # sets general.smoothScroll to false.
 # ignores all comment lines
 # will replace any existing general.smoothScroll setting
-file_line { "/home/duelafn/etc/mozilla/user.js:general.smoothScroll":
+file_line { "/home/duelafn/etc/mozilla/user.js: general.smoothScroll":
     provider => "basic",
     path     => "/home/duelafn/etc/mozilla/user.js",
     content  => 'user_pref("general.smoothScroll", false);',
-    ignore   => "^\\s*#",
+    ignore   => "^\\s*//",
     replace  => "[\\"']general\\.smoothScroll[\\"']",
 }
 
 # manage individual fstab entries
-file_line { "/etc/fstab: Student share":
+file_line { "/etc/fstab: /SHARE":
     path     => "/etc/fstab",
     content  => "//192.168.100.10/shared    /SHARE    smbfs    username=guest,password=,uid=guest    0    0",
     replace  => "\\s/SHARE\\s",
 }
 
-# base assumption is replace /^KEY=/ with "KEY=VALUE"
-# Default provider ignores lines with /^\s*#/
-file_line { "/etc/adduser.conf:DHOME":
+# default provider replaces /^\s*KEY\s*=/ with "KEY=VALUE"
+# default provider ignores lines matching /^\s*#/
+file_line { "/etc/adduser.conf: DHOME":
     path     => "/etc/adduser.conf",
     key      => "DHOME",
     value    => "/nfs/home",
 }
 
 # Set a default value only if missing
-file_line { "/etc/abcde.conf:OUTPUTTYPE":
+file_line { "/etc/abcde.conf: OUTPUTTYPE":
     path     => "/etc/abcde.conf",
     ensure   => "set",
     key      => "OUTPUTTYPE",
@@ -233,9 +245,9 @@ unset   - (requires "keyval" feature) the key is not set. value parameter is not
     end
 
     validate do
-        # @parameters.include?(:content) and (@parameters.include?(:key) or @parameters.include?(:value))
-        self.fail "You cannot specify both content and a key/value"    if self[:content] and (self[:key] or   self[:value])
-        self.fail "You must specify either content or a key/value" unless self[:content] or  (self[:key] and (self[:value] or self[:ensure] == :unset))
+        self.fail "You must specify a path" unless self[:path]
+
+        self.fail "You cannot specify both content and a key/value" if self[:content] and (self[:key] or self[:value])
 
         provider.validate if provider.respond_to? :validate
     end
