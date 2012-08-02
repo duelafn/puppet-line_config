@@ -17,7 +17,15 @@ INI-style config files. It does not yet support puppet filebuckets or line
 ordering (See the TODO file).
 
 
-Examples:
+Examples (see also examples directory):
+
+# default provider replaces /^\s*KEY\s*=/ with "KEY=VALUE"
+# default provider ignores lines matching /^\s*#/
+file_line { "/etc/adduser.conf: DHOME":
+    path     => "/etc/adduser.conf",
+    key      => "DHOME",
+    value    => "/nfs/home",
+}
 
 # sets general.smoothScroll to false.
 # ignores all comment lines
@@ -30,21 +38,6 @@ file_line { "/home/duelafn/etc/mozilla/user.js: general.smoothScroll":
     replace  => "[\\"']general\\.smoothScroll[\\"']",
 }
 
-# manage individual fstab entries
-file_line { "/etc/fstab: /SHARE":
-    path     => "/etc/fstab",
-    content  => "//192.168.100.10/shared    /SHARE    smbfs    username=guest,password=,uid=guest    0    0",
-    replace  => "\\s/SHARE\\s",
-}
-
-# default provider replaces /^\s*KEY\s*=/ with "KEY=VALUE"
-# default provider ignores lines matching /^\s*#/
-file_line { "/etc/adduser.conf: DHOME":
-    path     => "/etc/adduser.conf",
-    key      => "DHOME",
-    value    => "/nfs/home",
-}
-
 # Set a default value only if missing
 file_line { "/etc/abcde.conf: OUTPUTTYPE":
     path     => "/etc/abcde.conf",
@@ -53,40 +46,8 @@ file_line { "/etc/abcde.conf: OUTPUTTYPE":
     value    => "ogg",
 }
 
-# Sets "DefaultUser=guest" in corresponding section
-file_line { "kdmrc: DefaultUser":
-    provider => "ini",
-    path     => "/etc/kde4/kdm/kdmrc",
-    section  => "X-:0-Greeter",
-    key      => "DefaultUser",
-    value    => "guest",
-}
 
-# Ensure AutoLoginUser is missing from all sections
-file_line { "kdmrc: Auto-login":
-    provider => "ini",
-    ensure   => "unset",
-    path     => "/etc/kde4/kdm/kdmrc",
-    key      => "NoPassUsers",
-}
-
-
-# Use a define to make config settings quite nice:
-# Use a custom replace to replace both commented and uncommented instances
-define kdmrc($section=undef, $key=$name, $value=undef, $ensure=present) {
-    file_line { "kdmrc: [$section] $key":
-        provider => "ini",
-        path     => "/etc/kde4/kdm/kdmrc",
-        ensure   => $ensure,
-        key      => $key,
-        value    => $value,
-        section  => $section,
-        ignore   => [],
-        replace  => [ "^\\s*$key\\s*=", "^\\s*#\\s*$key\\s*=" ],
-        require  => Package["kdm"],
-    }
-}
-
+# Use a define (see examples directory) to make config settings quite nice:
 kdmrc { "NoPassUsers": ensure => "unset" }
 kdmrc { "DefaultUser":
     value => "guest",
