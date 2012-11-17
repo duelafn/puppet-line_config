@@ -2,9 +2,6 @@
 Puppet file_line Module
 =======================
 
-BETA QUALITY SOFTWARE - not recommended for production use
-
-
 Manipulate individual lines of a file
 
 This module came about when I realized that augeas lenses are tied to
@@ -15,6 +12,11 @@ This module is trying to be appropriate for line-based config files.
 Currently it should be able to handle line-by-line configs, KEY=VALUE, and
 INI-style config files. It does not yet support puppet filebuckets or line
 ordering (See the TODO file).
+
+I consider this module usable and it works for me on production systems. I
+do NOT, however, consider it stable - some changes in behavior may occur
+between releases. At the very least, due to a conflict with a "file_line"
+type in stdlib, I will probably have to change the name of this type.
 
 
 Examples (see also examples directory):
@@ -29,7 +31,7 @@ file_line { "/etc/adduser.conf: DHOME":
 
 # sets general.smoothScroll to false.
 # ignores all comment lines
-# will replace any existing general.smoothScroll setting
+# will replace any existing (uncommented) general.smoothScroll setting
 file_line { "/home/duelafn/etc/mozilla/user.js: general.smoothScroll":
     provider => "basic",
     path     => "/home/duelafn/etc/mozilla/user.js",
