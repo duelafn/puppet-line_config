@@ -2,7 +2,7 @@
 require 'fileutils'
 require 'tempfile'
 
-class Puppet::Provider::FileLine < Puppet::Provider
+class Puppet::Provider::LineConfig < Puppet::Provider
 
     def accepts?(line)
         return false unless line and @resource[:accept]

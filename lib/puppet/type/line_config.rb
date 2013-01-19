@@ -2,7 +2,7 @@
 require 'puppet/util/backups'
 require 'fileutils'
 
-Puppet::Type.newtype(:file_line) do
+Puppet::Type.newtype(:line_config) do
     include Puppet::Util::Backups
 
     attr_accessor :current_value_s, :target_value_s
@@ -30,7 +30,7 @@ Examples:
 # sets general.smoothScroll to false.
 # ignores all comment lines
 # will replace any existing general.smoothScroll setting
-file_line { "/home/duelafn/etc/mozilla/user.js: general.smoothScroll":
+line_config { "/home/duelafn/etc/mozilla/user.js: general.smoothScroll":
     provider => "basic",
     path     => "/home/duelafn/etc/mozilla/user.js",
     content  => 'user_pref("general.smoothScroll", false);',
@@ -39,7 +39,7 @@ file_line { "/home/duelafn/etc/mozilla/user.js: general.smoothScroll":
 }
 
 # manage individual fstab entries
-file_line { "/etc/fstab: /SHARE":
+line_config { "/etc/fstab: /SHARE":
     path     => "/etc/fstab",
     content  => "//192.168.100.10/shared    /SHARE    smbfs    username=guest,password=,uid=guest    0    0",
     replace  => "\\s/SHARE\\s",
@@ -47,14 +47,14 @@ file_line { "/etc/fstab: /SHARE":
 
 # default provider replaces /^\s*KEY\s*=/ with "KEY=VALUE"
 # default provider ignores lines matching /^\s*#/
-file_line { "/etc/adduser.conf: DHOME":
+line_config { "/etc/adduser.conf: DHOME":
     path     => "/etc/adduser.conf",
     key      => "DHOME",
     value    => "/nfs/home",
 }
 
 # Set a default value only if missing
-file_line { "/etc/abcde.conf: OUTPUTTYPE":
+line_config { "/etc/abcde.conf: OUTPUTTYPE":
     path     => "/etc/abcde.conf",
     ensure   => "set",
     key      => "OUTPUTTYPE",
@@ -62,7 +62,7 @@ file_line { "/etc/abcde.conf: OUTPUTTYPE":
 }
 
 # Sets "DefaultUser=guest" in corresponding section
-file_line { "kdmrc: DefaultUser":
+line_config { "kdmrc: DefaultUser":
     provider => "ini",
     path     => "/etc/kde4/kdm/kdmrc",
     section  => "X-:0-Greeter",
@@ -71,7 +71,7 @@ file_line { "kdmrc: DefaultUser":
 }
 
 # Ensure AutoLoginUser is missing from all sections
-file_line { "kdmrc: Auto-login":
+line_config { "kdmrc: Auto-login":
     provider => "ini",
     ensure   => "unset",
     path     => "/etc/kde4/kdm/kdmrc",
@@ -82,7 +82,7 @@ file_line { "kdmrc: Auto-login":
 # Use a define to make config settings quite nice:
 # Use a custom replace to replace both commented and uncommented instances
 define kdmrc($section=undef, $key=$name, $value=undef, $ensure=present) {
-    file_line { "kdmrc: [$section] $key":
+    line_config { "kdmrc: [$section] $key":
         provider => "ini",
         path     => "/etc/kde4/kdm/kdmrc",
         ensure   => $ensure,

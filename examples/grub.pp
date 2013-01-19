@@ -2,7 +2,7 @@
 exec { "update-grub": refreshonly => true }
 
 define grubconfig($key=$name, $value=undef, $ensure=present) {
-    file_line { "grub: $key":
+    line_config { "grub: $key":
         path     => '/etc/default/grub',
         ensure   => $ensure,
         key      => $key,

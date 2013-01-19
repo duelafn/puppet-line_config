@@ -1,6 +1,6 @@
-require File.join(File.dirname(__FILE__), '..', 'file_line')
+require File.join(File.dirname(__FILE__), '..', 'line_config')
 
-Puppet::Type.type(:file_line).provide(:default, :parent => Puppet::Provider::FileLine) do
+Puppet::Type.type(:line_config).provide(:default, :parent => Puppet::Provider::LineConfig) do
     has_feature :keyval
     desc ""
 

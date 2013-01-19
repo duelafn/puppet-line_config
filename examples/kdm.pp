@@ -1,6 +1,6 @@
 
 define kdmrc($section=undef, $key=$name, $value=undef, $ensure=present) {
-    file_line { "kdmrc: [$section] $key":
+    line_config { "kdmrc: [$section] $key":
         provider => "ini",
         path     => "/etc/kde4/kdm/kdmrc",
         ensure   => $ensure,

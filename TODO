@@ -3,11 +3,6 @@ Items are roughly in order of interest. Help or patches implementing any of
 these would be very much appreciated!
 
 
-* RENAME(?): stdlib has renamed whole_line to file_line... :(
-  https://github.com/puppetlabs/puppetlabs-stdlib
-  Or else attempt to modify and merge this code into stdlib
-
-
 * tests
 
 
