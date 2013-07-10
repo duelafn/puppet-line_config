@@ -85,6 +85,10 @@ class Puppet::Provider::LineConfig < Puppet::Provider
     end
 
     def get_state
+        if not File.exists?(@resource[:path])
+            return :nofile
+        end
+
         state = :unset
         flip_flop_init
 

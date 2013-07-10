@@ -53,12 +53,13 @@ line_config { "/etc/adduser.conf: DHOME":
     value    => "/nfs/home",
 }
 
-# Set a default value only if missing
+# Set a default value only if missing, ignore if file not present
 line_config { "/etc/abcde.conf: OUTPUTTYPE":
     path     => "/etc/abcde.conf",
     ensure   => "set",
     key      => "OUTPUTTYPE",
     value    => "ogg",
+    nofile   => "ignore",
 }
 
 # Sets "DefaultUser=guest" in corresponding section
@@ -121,7 +122,7 @@ unset   - (requires "keyval" feature) the key is not set. value parameter is not
 
         def retrieve
             prov = @resource.provider
-            return :unset unless File.exists? @resource.value(:path)
+            return :nofile unless File.exists? @resource.value(:path)
             if prov
                 return prov.get_state
             else
@@ -131,10 +132,11 @@ unset   - (requires "keyval" feature) the key is not set. value parameter is not
 
         def insync?(is)
             return true if is == should
+            return true if is == :nofile and @resource.value(:nofile) == :ignore
 
             case should
             when :absent
-                return true if [:unset, :absent].include?(is)
+                return true if [:unset, :absent, :nofile].include?(is)
             when :set
                 return true if [:set, :present].include?(is)
             end
@@ -221,6 +223,16 @@ unset   - (requires "keyval" feature) the key is not set. value parameter is not
 
         munge do |value|
             [*value].map { |x| Regexp.new(x) }
+        end
+    end
+
+    newparam(:nofile) do
+        desc "Behavior when file does not exist. Default is 'error'. May set to 'ignore' to skip configuration if file is missing."
+
+        defaultto :error
+
+        munge do |value|
+            value =~ /^ignore/i ? :ignore : :error
         end
     end
 
