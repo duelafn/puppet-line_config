@@ -14,7 +14,7 @@ Puppet::Type.type(:line_config).provide(:ini, :parent => Puppet::Provider::LineC
 
         if @resource[:key] and @resource[:value]
             @resource.default_content "#{@resource[:key]}=#{@resource[:value]}"
-            @resource.append_accepts %Q<^\\s*#{Regexp.escape(@resource[:key])}\\s*=\\s*['"]?#{Regexp.escape(@resource[:value])}["']?\\s*$>
+            @resource.append_accepts %Q<^\\s*#{Regexp.escape(@resource[:key].to_s)}\\s*=\\s*['"]?#{Regexp.escape(@resource[:value].to_s)}["']?\\s*$>
         end
     end
 
