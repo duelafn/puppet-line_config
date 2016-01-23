@@ -133,6 +133,7 @@ unset   - (requires "keyval" feature) the key is not set. value parameter is not
         def insync?(is)
             return true if is == should
             return true if is == :nofile and @resource.value(:nofile) == :ignore
+            return true if @resource.value(:replaceonly) and [:unset, :absent, :nofile].include?(is)
 
             case should
             when :absent
@@ -223,6 +224,27 @@ unset   - (requires "keyval" feature) the key is not set. value parameter is not
 
         munge do |value|
             [*value].map { |x| Regexp.new(x) }
+        end
+    end
+
+#     newparam(:replaceonly, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+    newparam(:replaceonly, :boolean => true) do
+        desc "When true, only insert if the 'replace' regexp matches."
+
+        ## The ":parent => Puppet::Parameter::Boolean" will handle this in newer versions of puppet(?)
+        def unsafe_munge(value)
+            if value.respond_to? :downcase
+                value = value.downcase
+            end
+
+            case value
+            when true, :true, 'true', :yes, 'yes'
+                true
+            when false, :false, 'false', :no, 'no'
+                false
+            else
+                fail('expected a boolean value')
+            end
         end
     end
 
