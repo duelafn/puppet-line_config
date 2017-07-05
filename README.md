@@ -156,6 +156,13 @@ Behavior when file does not exist. Possible values are `error` or `ignore`.
 
 The default value is `error`
 
+NOTE: There is no "create" option here since we couldn't handle the large
+number of (potentially conflicting) file permission options. If you wish to
+initialize a file (empty or with default values) when none exists, do this
+using a separate `file` resource which sets owner and permissions and
+includes `replace => false`. Then `require` that `File` resource from this
+one.
+
 
 Providers
 =========
