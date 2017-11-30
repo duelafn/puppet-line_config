@@ -10,11 +10,11 @@ Puppet::Type.type(:line_config).provide(:default, :parent => Puppet::Provider::L
         @resource.default_ignore "^\\s*#"
 
         if @resource[:key]
-            @resource.default_replace "^\\s*#{Regexp.escape(@resource[:key])}\\s*="
+            @resource.default_replace "^\\s*#{Regexp.escape(@resource[:key].to_s)}\\s*="
         end
 
         if @resource[:key] and @resource[:value]
-            @resource.default_content "#{@resource[:key]}=#{@resource[:value]}"
+            @resource.default_content "#{@resource[:key].to_s}=#{@resource[:value].to_s}"
         end
     end
 

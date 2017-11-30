@@ -30,7 +30,7 @@ class Puppet::Provider::LineConfig < Puppet::Provider
     end
 
     def content
-        "#{@resource[:content].chomp}\n"
+        "#{@resource[:content].to_s.chomp}\n"
     end
 
     def content_with_section

@@ -9,18 +9,18 @@ Puppet::Type.type(:line_config).provide(:ini, :parent => Puppet::Provider::LineC
         @resource.default_ignore "^\\s*#"
 
         if @resource[:key]
-            @resource.default_replace "^\\s*#{Regexp.escape(@resource[:key])}\\s*="
+            @resource.default_replace "^\\s*#{Regexp.escape(@resource[:key].to_s)}\\s*="
         end
 
         if @resource[:key] and @resource[:value]
-            @resource.default_content "#{@resource[:key]}=#{@resource[:value]}"
+            @resource.default_content "#{@resource[:key].to_s}=#{@resource[:value].to_s}"
             @resource.append_accepts %Q<^\\s*#{Regexp.escape(@resource[:key].to_s)}\\s*=\\s*['"]?#{Regexp.escape(@resource[:value].to_s)}["']?\\s*$>
         end
     end
 
     def content_with_section
         return content unless @resource[:section]
-        "[#{@resource[:section]}]\n#{@resource[:content].chomp}\n"
+        "[#{@resource[:section].to_s}]\n#{@resource[:content].to_s.chomp}\n"
     end
 
     def flip_flop_init
@@ -31,7 +31,7 @@ Puppet::Type.type(:line_config).provide(:ini, :parent => Puppet::Provider::LineC
         return @ff = true  unless @resource[:section]
         return @ff = false unless line
 
-        if line =~ /^\[#{Regexp.escape(@resource[:section])}\]/
+        if line =~ /^\[#{Regexp.escape(@resource[:section].to_s)}\]/
             @ff = true
             return false
         elsif line =~ /^\[/
