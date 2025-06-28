@@ -85,7 +85,7 @@ class Puppet::Provider::LineConfig < Puppet::Provider
     end
 
     def get_state
-        if not File.exists?(@resource[:path])
+        if not File.exist?(@resource[:path])
             return :nofile
         end
 

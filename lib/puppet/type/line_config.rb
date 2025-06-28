@@ -122,7 +122,7 @@ unset   - (requires "keyval" feature) the key is not set. value parameter is not
 
         def retrieve
             prov = @resource.provider
-            return :nofile unless File.exists? @resource.value(:path)
+            return :nofile unless File.exist? @resource.value(:path)
             if prov
                 return prov.get_state
             else
